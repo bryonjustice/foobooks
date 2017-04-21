@@ -1,0 +1,40 @@
+body {
+    padding:25px;
+}
+
+footer {
+    margin-top:50px;
+}
+
+.alert, .btn {
+    margin-top:10px;
+}
+
+
+label, legend {
+    display:block;
+    margin-top:20px;
+    margin-bottom:0;
+}
+
+input, textarea, select {
+    display:block;
+}
+
+input[type='checkbox'], input[type='radio'] {
+    display:inline;
+}
+
+input[type='checkbox'] + label {
+    display:inline;
+}
+
+.message {
+    width:100%;
+    position:fixed;
+    top:0;
+    left:0;
+    text-align:center;
+    font-size:18px;
+    background-color:yellow;
+}
