@@ -26,7 +26,7 @@
         <input type='text' name='purchase_link' id='purchase_link' value='{{ old('purchase_link', 'http://www.barnesandnoble.com/w/green-eggs-and-ham-dr-seuss/1100170349') }}'>
 
         <br>
-        <input type='submit' value='Add new book'>
+        <input class='btn btn-primary' type='submit' value='Add new book'>
     </form>
 
 

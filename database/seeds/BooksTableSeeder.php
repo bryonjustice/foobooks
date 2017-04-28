@@ -3,6 +3,7 @@
 use Illuminate\Database\Seeder;
 
 use App\Book;
+use App\Author;
 
 class BooksTableSeeder extends Seeder
 {
@@ -29,6 +30,16 @@ class BooksTableSeeder extends Seeder
 
         foreach($books as $title => $book) {
 
+            # First, figure out the id of the author we want to associate with this book
+
+            # Extract just the last name from the book data...
+            # F. Scott Fitzgerald => ['F.', 'Scott', 'Fitzgerald'] => 'Fitzgerald'
+            $name = explode(' ', $book['author']);
+            $lastName = array_pop($name);
+
+            # Find that author in the authors table
+            $author_id = Author::where('last_name', '=', $lastName)->pluck('id')->first();
+
             # Set the created_at/updated_at for each book to be one day less than
             # the book before. That way each book will have unique timestamps.
             $timestampForThisBook = $timestamp->addDay()->toDateTimeString();
@@ -36,7 +47,7 @@ class BooksTableSeeder extends Seeder
                 'created_at' => $timestampForThisBook,
                 'updated_at' => $timestampForThisBook,
                 'title' => $title,
-                'author' => $book['author'],
+                'author_id' => $author_id,
                 'published' => $book['published'],
                 'cover' => $book['cover'],
                 'purchase_link' => $book['purchase_link'],

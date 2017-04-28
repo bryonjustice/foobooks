@@ -1,29 +1,41 @@
 @extends('layouts.master')
 
+@push('head')
+    <link href='/css/books.css' rel='stylesheet'>
+@endpush
+
 @section('title')
-    Book Index
+    Books
 @endsection
 
 @section('content')
 
-
-    <div style='background-color:papayawhip'>
-        <h2>New Books</h2>
+    <section id='newBooks'>
+        <h2>Latest additions to the Foobooks library</h2>
+        <ul>
         @foreach($newBooks as $book)
-            <div class='book'>
-                <h3>{{ $book['title'] }}</h3>
+            {{-- Note: diffForHumans is a built in method available to Carbon timestamps, read more here: http://carbon.nesbot.com/docs/ --}}
+            <li class='truncate'><a href='/books/{{ $book->id }}'>{{ $book->title }}</a> added {{ $book->created_at->diffForHumans()}}</li>
+        @endforeach
+        </ul>
+    </section>
+
+    <section id='books' class='cf'>
+        <h2>All books</h2>
+        @foreach($books as $book)
+
+            <div class='book cf'>
+
+                <a href='/books/{{ $book->id }}'><img class='cover' src='{{ $book->cover }}' alt='Cover for {{ $book->title }}'></a>
+
+                <a href='/books/{{ $book->id }}'><h3>{{ $book->title }}</h3></a>
+
+                <a class='bookAction' href='/books/edit/{{ $book->id }}'><i class='fa fa-pencil'></i></a>
+                <a class='bookAction' href='/books/{{ $book->id }}'><i class='fa fa-eye'></i></a>
+                <a class='bookAction' href='/books/delete/{{ $book->id }}'><i class='fa fa-trash'></i></a>
+
             </div>
         @endforeach
-    </div>
+    </section>
 
-
-    <h1>All the books</h1>
-
-    @foreach($books as $book)
-        <div class='book'>
-            <h2>{{ $book['title'] }}</h2>
-            <img src='{{ $book['cover'] }}' alt='Book cover photo for {{$book['title']}}'>
-            Published in {{ $book['published'] }}
-        </div>
-    @endforeach
 @endsection

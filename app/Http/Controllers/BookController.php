@@ -4,15 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Book;
+use App\Author;
+use App\Tag;
 use Session;
 
 class BookController extends Controller
 {
 
     /**
-	* GET
+    * GET
     * /books
-	*/
+    */
     public function index() {
 
         $books = Book::orderBy('title')->get(); # Query DB
@@ -30,12 +32,20 @@ class BookController extends Controller
 
 
     /**
-	* GET
-    * /books/{title?}
-	*/
-    public function show($title = null) {
+    * GET
+    * /books/{id}
+    */
+    public function show($id) {
+
+        $book = Book::find($id);
+
+        if(!$book) {
+            Session::flash('message', 'The book you requested could not be found.');
+            return redirect('/');
+        }
+
         return view('books.show')->with([
-            'title' => $title,
+            'book' => $book,
         ]);
     }
 
@@ -103,9 +113,13 @@ class BookController extends Controller
     * Display the form to add a new book
     */
     public function createNewBook(Request $request) {
-        return view('books.new');
-    }
 
+        $authorsForDropdown = Author::getAuthorsForDropdown();
+
+        return view('books.new')->with([
+            'authorsForDropdown' => $authorsForDropdown
+        ]);
+    }
 
 
     /**
@@ -136,30 +150,48 @@ class BookController extends Controller
         return redirect('/books');
     }
 
+
     /**
-	* GET
+    * GET
     * /books/edit/{id}
-	*/
+    * Show form to edit a book
+    */
     public function edit($id) {
 
-        $book = Book::find($id);
+        $book = Book::with('tags')->find($id);
 
         if(is_null($book)) {
-            Session::flash('message', 'Book not found.');
+            Session::flash('message', 'The book you requested was not found.');
             return redirect('/books');
         }
+
+        $authorsForDropdown = Author::getAuthorsForDropdown();
+
+        $tagsForCheckboxes = Tag::getTagsForCheckboxes();
+
+        # Create a simple array of just the tag names for tags associated with this book;
+        # will be used in the view to decide which tags should be checked off
+        $tagsForThisBook = [];
+        foreach($book->tags as $tag) {
+            $tagsForThisBook[] = $tag->name;
+        }
+        # Results in an array like this: $tagsForThisBook => ['novel','fiction','classic'];
 
         return view('books.edit')->with([
             'id' => $id,
             'book' => $book,
+            'authorsForDropdown' => $authorsForDropdown,
+            'tagsForCheckboxes' => $tagsForCheckboxes,
+            'tagsForThisBook' => $tagsForThisBook,
         ]);
 
     }
 
     /**
-	* POST
+    * POST
     * /books/edit
-	*/
+    * Process form to save edits to a book
+    */
     public function saveEdits(Request $request) {
 
         $this->validate($request, [
@@ -176,11 +208,69 @@ class BookController extends Controller
         $book->published = $request->published;
         $book->cover = $request->cover;
         $book->purchase_link = $request->purchase_link;
+        $book->author_id = $request->author_id;
+
+        # If there were tags selected...
+        if($request->tags) {
+            $tags = $request->tags;
+        }
+        # If there were no tags selected (i.e. no tags in the request)
+        # default to an empty array of tags
+        else {
+            $tags = [];
+        }
+
+        # Above if/else could be condensed down to this: $tags = ($request->tags) ?: [];
+
+        # Sync tags
+        $book->tags()->sync($tags);
         $book->save();
 
-        Session::flash('message', 'Your changes were saved');
+        Session::flash('message', 'Your changes to '.$book->title.' were saved.');
         return redirect('/books/edit/'.$request->id);
 
+    }
+
+
+    /**
+    * GET
+    * Page to confirm deletion
+    */
+    public function confirmDeletion($id) {
+
+        # Get the book they're attempting to delete
+        $book = Book::find($id);
+
+        if(!$book) {
+            Session::flash('message', 'Book not found.');
+            return redirect('/books');
+        }
+
+        return view('books.delete')->with('book', $book);
+    }
+
+
+    /**
+    * POST
+    * Actually delete the book
+    */
+    public function delete(Request $request) {
+
+        # Get the book to be deleted
+        $book = Book::find($request->id);
+
+        if(!$book) {
+            Session::flash('message', 'Deletion failed; book not found.');
+            return redirect('/books');
+        }
+
+        $book->tags()->detach();
+
+        $book->delete();
+
+        # Finish
+        Session::flash('message', $book->title.' was deleted.');
+        return redirect('/books');
     }
 
 }

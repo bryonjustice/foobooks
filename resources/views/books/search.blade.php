@@ -10,14 +10,14 @@
 
     <form method='GET' action='/search'>
 
-        <label for='searchTerm'>Search by title:</label>
+        <label for='searchTerm'>Title</label>
         <input type='text' name='searchTerm' id='searchTerm' value='{{ $searchTerm or '' }}'>
-
+        <br>
         <input type='checkbox' name='caseSensitive' {{ ($caseSensitive) ? 'CHECKED' : '' }} >
         <label>case sensitive</label>
 
-        <br>
-        <input type='submit' class='btn btn-primary btn-small'>
+        <br><br>
+        <input type='submit' value='Search' class='btn btn-primary btn-small'>
 
     </form>
 
@@ -32,8 +32,7 @@
             @foreach($searchResults as $title => $book)
                 <div class='book'>
                     <h3>{{ $title }}</h3>
-                    <h4>by {{ $book['author'] }}</h4>
-                    <img src='{{$book['cover']}}'>
+                    <img src='{{ $book['cover']}}'>
                 </div>
             @endforeach
 

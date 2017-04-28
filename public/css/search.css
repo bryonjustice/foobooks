@@ -1,0 +1,11 @@
+.book {
+    border:1px solid #ccc;
+    padding:5px;
+    width:100%;
+    max-width:300px;
+    text-align:center;
+}
+
+.book h3 {
+    margin-top:0;
+}

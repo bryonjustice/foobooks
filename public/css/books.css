@@ -1,0 +1,50 @@
+/*----------------------------------------------------
+"Latest additions to the Foobooks library" callout
+-----------------------------------------------------*/
+#newBooks {
+    background-color:Cornsilk;
+    padding:10px;
+    border-radius:5px;
+    margin-top:10px;
+    text-align:center;
+}
+
+#newBooks h2 {
+    margin-top:0;
+    text-align:center;
+    font-weight:bold;
+    font-size:1.6rem;
+}
+#newBooks ul {
+    margin:0;
+    padding:0;
+    list-style-type:none;
+}
+
+
+/*----------------------------------------------------
+Books
+-----------------------------------------------------*/
+#books {
+    margin-bottom:20px;
+}
+
+.book {
+    padding:10px;
+    width:100%;
+    margin-bottom:5px;
+}
+
+.book h3 {
+    font-size:1.3em;
+    margin:4px 0 4px 0;
+    font-style:italic;
+    text-align:left;
+}
+
+.cover {
+    float:left;
+    width:100px;
+    border:1px solid black;
+    margin-right:10px;
+}
